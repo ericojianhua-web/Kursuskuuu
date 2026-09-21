@@ -51,7 +51,10 @@ $kursus = [
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title><?= $namaWebsite ?></title>
 
@@ -201,7 +204,10 @@ $kursus = [
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(230px, 1fr)
+            );
             gap: 20px;
         }
 
@@ -257,6 +263,66 @@ $kursus = [
             font-weight: bold;
         }
 
+        /* KONTAK */
+
+        .contact-section {
+            padding: 50px 8%;
+            background: #dbeafe;
+            text-align: center;
+        }
+
+        .contact-box {
+            max-width: 650px;
+            margin: auto;
+            padding: 35px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+        }
+
+        .contact-icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        .contact-box h2 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        .contact-box p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .contact-box h3 {
+            color: #222;
+            font-size: 24px;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        .contact-number {
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .contact-button {
+            display: inline-block;
+            padding: 13px 24px;
+            background: #22c55e;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .contact-button:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
         /* FOOTER */
 
         footer {
@@ -299,7 +365,16 @@ $kursus = [
                 padding: 35px 6%;
             }
 
+            .contact-section {
+                padding: 40px 6%;
+            }
+
             .menu-button {
+                width: 100%;
+                max-width: 350px;
+            }
+
+            .contact-button {
                 width: 100%;
                 max-width: 350px;
             }
@@ -434,10 +509,10 @@ $kursus = [
 
             <div class="card">
 
-                <span class="status <?= strtolower($item["status"]) ?>">
-
+                <span
+                    class="status <?= strtolower($item["status"]) ?>"
+                >
                     <?= $item["status"] ?>
-
                 </span>
 
                 <h3>
@@ -467,6 +542,46 @@ $kursus = [
     </div>
 
 </main>
+
+
+<!-- KONTAK -->
+
+<section class="contact-section">
+
+    <div class="contact-box">
+
+        <div class="contact-icon">
+            📱
+        </div>
+
+        <h2>
+            Hubungi Kami
+        </h2>
+
+        <p>
+            Ada pertanyaan tentang Kursuskuuu?
+            Silakan hubungi kami melalui WhatsApp.
+        </p>
+
+        <h3>
+            Erico Jianhua
+        </h3>
+
+        <p class="contact-number">
+            WhatsApp: 083130857411
+        </p>
+
+        <a
+            href="https://wa.me/6283130857411"
+            target="_blank"
+            class="contact-button"
+        >
+            💬 Hubungi via WhatsApp
+        </a>
+
+    </div>
+
+</section>
 
 
 <!-- FOOTER -->
