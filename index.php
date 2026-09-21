@@ -115,23 +115,78 @@ $kursus = [
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
 
-        /* MEDIA */
+        /* TOMBOL MENU */
+
+        .menu-section {
+            padding: 40px 8%;
+            background: white;
+            text-align: center;
+        }
+
+        .menu-section h2 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        .menu-section p {
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .menu-button {
+            display: inline-block;
+            padding: 13px 22px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .menu-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        /* VIDEO */
 
         .media-section {
-            padding: 40px 8%;
+            padding: 50px 8%;
             text-align: center;
-            background: white;
+            background: #f8fafc;
         }
 
         .media-section h2 {
-            margin-bottom: 20px;
             color: #2563eb;
+            margin-bottom: 10px;
         }
 
-        .media-section video {
+        .media-section p {
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .video-container {
+            max-width: 800px;
+            margin: auto;
+            background: #111827;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-container video {
             width: 100%;
-            max-width: 700px;
-            border-radius: 12px;
+            display: block;
+            border-radius: 10px;
         }
 
         /* KATALOG */
@@ -237,7 +292,16 @@ $kursus = [
             }
 
             .media-section {
-                padding: 30px 6%;
+                padding: 40px 6%;
+            }
+
+            .menu-section {
+                padding: 35px 6%;
+            }
+
+            .menu-button {
+                width: 100%;
+                max-width: 350px;
             }
 
         }
@@ -292,22 +356,68 @@ $kursus = [
 </section>
 
 
+<!-- MENU FITUR -->
+
+<section class="menu-section">
+
+    <h2>Fitur Kursuskuuu</h2>
+
+    <p>
+        Akses berbagai fitur pendukung pembelajaran PHP.
+    </p>
+
+    <div class="menu-buttons">
+
+        <a
+            href="fee-calculator.php"
+            class="menu-button"
+        >
+            🧮 Kalkulator Biaya
+        </a>
+
+        <a
+            href="server-time.php"
+            class="menu-button"
+        >
+            🖥️ Server Time
+        </a>
+
+        <a
+            href="test-functions.php"
+            class="menu-button"
+        >
+            🔧 Fungsi PHP
+        </a>
+
+    </div>
+
+</section>
+
+
 <!-- VIDEO -->
 
 <section class="media-section">
 
     <h2>Video Pengenalan Kursuskuuu</h2>
 
-    <video controls>
+    <p>
+        Simak video berikut untuk mengenal Kursuskuuu lebih dekat.
+    </p>
 
-        <source
-            src="assets/video/intro-kursus.mp4"
-            type="video/mp4"
-        >
+    <div class="video-container">
 
-        Browser Anda tidak mendukung pemutar video.
+        <video controls preload="metadata">
 
-    </video>
+            <source
+                src="assets/video/intro-kursus.mp4"
+                type="video/mp4"
+            >
+
+            Browser Anda tidak mendukung pemutar video.
+
+        </video>
+
+    </div>
 
 </section>
 
@@ -331,16 +441,12 @@ $kursus = [
                 </span>
 
                 <h3>
-
                     <?= $item["nama"] ?>
-
                 </h3>
 
                 <p>
-
                     <strong>Kategori:</strong>
                     <?= $item["kategori"] ?>
-
                 </p>
 
                 <p class="harga">
