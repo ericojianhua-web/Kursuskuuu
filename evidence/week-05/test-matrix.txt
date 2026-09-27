@@ -1,0 +1,14 @@
+TEST MATRIX - WEEK 05
+Kursuskuuu
+
+No | Fitur              | Skenario Pengujian                      | Hasil yang Diharapkan                 | Status
+1  | Form Registrasi    | Membuka halaman registration.php       | Form registrasi tampil lengkap        | PASS
+2  | GET Parameter      | Memilih kursus dari katalog            | Nama kursus masuk ke URL melalui GET  | PASS
+3  | Form Input         | Mengisi seluruh data registrasi        | Semua data dapat diisi                | PASS
+4  | POST               | Menekan tombol Daftar/Kirim            | Data diproses menggunakan POST        | PASS
+5  | POST Result        | Setelah form berhasil dikirim          | Hasil registrasi ditampilkan          | PASS
+6  | Navigasi            | Katalog → Registrasi                   | Halaman registrasi dapat dibuka       | PASS
+7  | Navigasi            | Registrasi → Hasil                     | Hasil registrasi dapat ditampilkan    | PASS
+8  | Responsive Desktop | Membuka form pada layar desktop        | Tampilan form terlihat dengan baik    | PASS
+9  | Responsive Mobile  | Membuka form pada layar mobile         | Tampilan menyesuaikan ukuran layar    | PASS
+10 | Validasi Form      | Mengirim form dengan data kosong       | Pengguna diminta melengkapi data      | PASS

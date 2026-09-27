@@ -1,0 +1,54 @@
+PERBANDINGAN LOCALHOST DAN HOSTING
+Kursuskuuu - Week 05
+
+1. LOCALHOST
+
+Localhost adalah lingkungan untuk menjalankan website di komputer sendiri.
+
+Kelebihan:
+- Dapat digunakan tanpa mengupload website ke internet.
+- Cocok untuk proses pengembangan dan pengujian.
+- Perubahan pada file dapat langsung diuji.
+- Tidak membutuhkan koneksi internet untuk menjalankan website.
+
+Kekurangan:
+- Website hanya dapat diakses dari komputer sendiri atau jaringan lokal.
+- Komputer harus menjalankan server seperti Laragon.
+- Website belum dapat diakses oleh pengguna melalui internet.
+
+
+2. HOSTING
+
+Hosting adalah layanan yang menyediakan server agar website dapat
+diakses melalui internet.
+
+Kelebihan:
+- Website dapat diakses melalui internet.
+- Dapat dibuka dari berbagai perangkat.
+- Cocok untuk website yang sudah selesai dan ingin dipublikasikan.
+
+Kekurangan:
+- Membutuhkan koneksi internet.
+- Biasanya membutuhkan biaya hosting dan domain.
+- File website harus diupload ke server.
+
+
+3. PERBANDINGAN
+
+Aspek           | Localhost                  | Hosting
+----------------|----------------------------|-------------------------
+Lokasi          | Komputer sendiri           | Server internet
+Akses           | Lokal                       | Internet
+Koneksi Internet| Tidak wajib                | Wajib
+Pengembangan    | Cocok                      | Kurang praktis
+Publikasi       | Belum dipublikasikan      | Dapat dipublikasikan
+Biaya           | Umumnya gratis             | Umumnya berbayar
+Contoh          | Laragon + localhost       | Web hosting
+
+
+4. KESIMPULAN
+
+Localhost lebih sesuai digunakan saat proses pembuatan, pengembangan,
+dan pengujian website Kursuskuuu. Setelah website selesai dan siap
+digunakan oleh pengguna, website dapat dipindahkan ke hosting agar
+dapat diakses melalui internet.

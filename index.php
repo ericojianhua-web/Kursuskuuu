@@ -263,6 +263,40 @@ $kursus = [
             font-weight: bold;
         }
 
+        /* TOMBOL REGISTRASI */
+
+        .register-button {
+            display: block;
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #2563eb;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .register-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .register-disabled {
+            display: block;
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #9ca3af;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: not-allowed;
+        }
+
         /* KONTAK */
 
         .contact-section {
@@ -535,6 +569,23 @@ $kursus = [
 
                 </p>
 
+                <?php if ($item["status"] === "Tersedia"): ?>
+
+                    <a
+                        href="registration.php?kursus=<?= urlencode($item["nama"]) ?>"
+                        class="register-button"
+                    >
+                        📝 Daftar Sekarang
+                    </a>
+
+                <?php else: ?>
+
+                    <div class="register-disabled">
+                        Kursus Penuh
+                    </div>
+
+                <?php endif; ?>
+
             </div>
 
         <?php endforeach; ?>
@@ -592,6 +643,7 @@ $kursus = [
     <?= $namaWebsite ?>
 
 </footer>
+
 
 </body>
 
