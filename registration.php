@@ -1,26 +1,83 @@
-```php
 <?php
 
 $siteName = "Kursuskuuu";
 $tagline = "Belajar Teknologi, Bangun Masa Depan";
 
+/* =========================================================
+   DAFTAR KURSUS
+========================================================= */
+
+$daftarKursus = [
+    "Dasar Pemrograman PHP",
+    "HTML dan CSS",
+    "JavaScript Dasar",
+    "Database MySQL",
+    "Desain UI/UX",
+    "Git dan GitHub"
+];
+
+/* =========================================================
+   HARGA KURSUS
+========================================================= */
+
+$hargaKursus = [
+    "Dasar Pemrograman PHP" => 150000,
+    "HTML dan CSS" => 100000,
+    "JavaScript Dasar" => 125000,
+    "Database MySQL" => 150000,
+    "Desain UI/UX" => 175000,
+    "Git dan GitHub" => 100000
+];
+
+/* =========================================================
+   DISKON PESERTA
+========================================================= */
+
+$diskonPeserta = [
+    "Guru" => 20,
+    "Mahasiswa" => 15,
+    "Umum" => 5
+];
+
+/* =========================================================
+   FILE RIWAYAT
+========================================================= */
+
+$fileRiwayat = __DIR__ . "/riwayat.json";
+
 /*
-|--------------------------------------------------------------------------
-| Kursus dari katalog
-|--------------------------------------------------------------------------
+   Jika riwayat.json belum ada,
+   otomatis dibuat dengan isi []
 */
 
-$kursusDipilih = $_GET['kursus'] ?? '';
+if (!file_exists($fileRiwayat)) {
 
-/*
-|--------------------------------------------------------------------------
-| Data hasil registrasi
-|--------------------------------------------------------------------------
-*/
+    file_put_contents(
+        $fileRiwayat,
+        json_encode(
+            [],
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+        )
+    );
+}
+
+/* =========================================================
+   KURSUS DARI URL
+========================================================= */
+
+$kursusDipilih = $_GET["kursus"] ?? "";
 
 $dataRegistrasi = null;
 
+/* =========================================================
+   PROSES FORM
+========================================================= */
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    /* =========================
+       AMBIL DATA FORM
+    ========================= */
 
     $nama = trim($_POST["nama"] ?? "");
     $email = trim($_POST["email"] ?? "");
@@ -28,46 +85,183 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $prodi = trim($_POST["prodi"] ?? "");
     $kursus = trim($_POST["kursus"] ?? "");
     $jenisPeserta = trim($_POST["jenis_peserta"] ?? "");
-    $minat = $_POST["minat"] ?? [];
+
+    $interest = $_POST["interest"] ?? [];
+
     $catatan = trim($_POST["catatan"] ?? "");
 
-    /*
-    |--------------------------------------------------------------------------
-    | Nomor registrasi
-    |--------------------------------------------------------------------------
-    */
+    /* =========================
+       VALIDASI SEDERHANA
+    ========================= */
 
-    $nomorRegistrasi = "REG-" . date("YmdHis");
+    if (
+        $nama === "" ||
+        $email === "" ||
+        $noHp === "" ||
+        $prodi === "" ||
+        $kursus === "" ||
+        $jenisPeserta === ""
+    ) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Gabungkan minat tambahan
-    |--------------------------------------------------------------------------
-    */
-
-    if (!empty($minat)) {
-        $minatTambahan = implode(", ", $minat);
-    } else {
-        $minatTambahan = "Tidak ada";
+        die("Data registrasi belum lengkap.");
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Simpan data untuk ditampilkan
-    |--------------------------------------------------------------------------
-    */
+    /* =========================
+       NOMOR REGISTRASI
+    ========================= */
+
+    $nomorRegistrasi =
+        "REG-" . date("YmdHis") . "-" . rand(100, 999);
+
+    /* =========================
+       TANGGAL REGISTRASI
+    ========================= */
+
+    $tanggalRegistrasi =
+        date("Y-m-d H:i:s");
+
+    /* =========================
+       INTEREST
+    ========================= */
+
+    if (!empty($interest)) {
+
+        $interestDipilih =
+            implode(", ", $interest);
+
+    } else {
+
+        $interestDipilih =
+            "Tidak ada";
+    }
+
+    /* =========================
+       HARGA KURSUS
+    ========================= */
+
+    $harga =
+        $hargaKursus[$kursus] ?? 0;
+
+    /* =========================
+       DISKON
+    ========================= */
+
+    $persenDiskon =
+        $diskonPeserta[$jenisPeserta] ?? 0;
+
+    $jumlahDiskon =
+        $harga * ($persenDiskon / 100);
+
+    /* =========================
+       TOTAL BIAYA
+    ========================= */
+
+    $totalBiaya =
+        $harga - $jumlahDiskon;
+
+    /* =====================================================
+       DATA REGISTRASI
+    ===================================================== */
 
     $dataRegistrasi = [
-        "nomor" => $nomorRegistrasi,
-        "nama" => $nama,
-        "email" => $email,
-        "no_hp" => $noHp,
-        "prodi" => $prodi,
-        "kursus" => $kursus,
-        "jenis_peserta" => $jenisPeserta,
-        "minat" => $minatTambahan,
-        "catatan" => $catatan
+
+        "nomor" =>
+            $nomorRegistrasi,
+
+        "tanggal" =>
+            $tanggalRegistrasi,
+
+        "nama" =>
+            $nama,
+
+        "email" =>
+            $email,
+
+        "no_hp" =>
+            $noHp,
+
+        "prodi" =>
+            $prodi,
+
+        "kursus" =>
+            $kursus,
+
+        "jenis_peserta" =>
+            $jenisPeserta,
+
+        "interest" =>
+            $interestDipilih,
+
+        "catatan" =>
+            $catatan,
+
+        "harga" =>
+            $harga,
+
+        "persen_diskon" =>
+            $persenDiskon,
+
+        "jumlah_diskon" =>
+            $jumlahDiskon,
+
+        "total_biaya" =>
+            $totalBiaya,
+
+        "status" =>
+            "Pendaftaran Berhasil"
     ];
+
+    /* =====================================================
+       BACA RIWAYAT LAMA
+    ===================================================== */
+
+    $isiFile =
+        file_get_contents($fileRiwayat);
+
+    $riwayat =
+        json_decode($isiFile, true);
+
+    /* =====================================================
+       JIKA JSON RUSAK / KOSONG
+    ===================================================== */
+
+    if (!is_array($riwayat)) {
+
+        $riwayat = [];
+    }
+
+    /* =====================================================
+       MASUKKAN DATA BARU KE RIWAYAT
+    ===================================================== */
+
+    $riwayat[] =
+        $dataRegistrasi;
+
+    /* =====================================================
+       SIMPAN KE riwayat.json
+    ===================================================== */
+
+    $berhasilSimpan =
+        file_put_contents(
+            $fileRiwayat,
+            json_encode(
+                $riwayat,
+                JSON_PRETTY_PRINT |
+                JSON_UNESCAPED_UNICODE
+            )
+        );
+
+    /* =====================================================
+       CEK JIKA GAGAL MENYIMPAN
+    ===================================================== */
+
+    if ($berhasilSimpan === false) {
+
+        die(
+            "Gagal menyimpan riwayat. " .
+            "Pastikan file riwayat.json dapat ditulis."
+        );
+    }
 }
 
 ?>
@@ -85,8 +279,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     >
 
     <title>
-        <?= $dataRegistrasi ? "Registrasi Berhasil - " : "" ?>
-        <?= $siteName ?>
+        <?= htmlspecialchars($siteName) ?>
+        - Registrasi Kursus
     </title>
 
     <style>
@@ -102,19 +296,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             color: #222;
         }
 
-        /* HEADER */
-
         header {
             background: #2563eb;
             color: white;
-            padding: 20px 8%;
+            padding: 20px;
         }
 
-        header h1 {
-            margin: 0;
+        .header-container {
+            max-width: 1100px;
+            margin: auto;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
         }
 
-        /* CONTAINER */
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tagline {
+            font-size: 14px;
+        }
+
+        .catalog-button {
+            display: inline-block;
+            padding: 10px 16px;
+
+            background: white;
+            color: #2563eb;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+        }
 
         .container {
             max-width: 900px;
@@ -122,303 +348,424 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             padding: 0 20px;
         }
 
-        /* CARD */
+        .card,
+        .success-card {
 
-        .card {
             background: white;
-            padding: 35px;
+
+            padding: 30px;
+
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.08);
         }
 
-        .card h2 {
+        h1 {
             color: #2563eb;
-            text-align: center;
-            margin-top: 0;
         }
 
-        .description {
-            text-align: center;
+        .card-description,
+        .success-message {
             color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
         }
-
-        /* FORM */
 
         .form-group {
             margin-bottom: 20px;
         }
 
-        .form-group label {
+        .main-label {
             display: block;
             font-weight: bold;
             margin-bottom: 8px;
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select,
+        textarea {
+
             width: 100%;
-            padding: 12px;
+
+            padding: 12px 14px;
+
             border: 1px solid #d1d5db;
+
             border-radius: 8px;
+
             font-size: 15px;
-            font-family: Arial, sans-serif;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #2563eb;
-        }
-
-        .form-group textarea {
-            min-height: 100px;
+        textarea {
+            min-height: 120px;
             resize: vertical;
         }
 
-        /* RADIO */
+        .price-box {
 
-        .radio-group {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            margin-top: 10px;
+
+            padding: 15px;
+
+            background: #eff6ff;
+
+            border: 1px solid #bfdbfe;
+
+            border-radius: 8px;
         }
 
-        .radio-item {
-            display: flex;
-            align-items: center;
-            gap: 7px;
+        .price-label {
+            color: #555;
+            font-size: 14px;
         }
 
-        .radio-item input {
-            width: auto;
+        .original-price {
+
+            color: #888;
+
+            font-size: 14px;
+
+            text-decoration: line-through;
         }
 
-        /* CHECKBOX */
+        .price-value {
 
+            color: #2563eb;
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            margin-top: 5px;
+        }
+
+        .discount-text {
+
+            color: #16a34a;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            margin-top: 5px;
+        }
+
+        .radio-group,
         .checkbox-group {
+
             display: flex;
-            flex-direction: column;
+
+            flex-wrap: wrap;
+
             gap: 10px;
         }
 
+        .radio-item,
         .checkbox-item {
+
             display: flex;
+
             align-items: center;
-            gap: 8px;
-        }
 
-        .checkbox-item input {
-            width: auto;
-        }
+            gap: 7px;
 
-        /* BUTTON */
+            padding: 10px 14px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+        }
 
         .submit-button {
+
             width: 100%;
+
             border: none;
+
             padding: 14px;
+
             background: #2563eb;
+
             color: white;
+
             border-radius: 8px;
+
             font-size: 16px;
+
             font-weight: bold;
+
             cursor: pointer;
-            transition: 0.3s;
         }
 
         .submit-button:hover {
             background: #1d4ed8;
-            transform: translateY(-2px);
         }
 
-        /* HASIL REGISTRASI */
-
         .success-icon {
-            width: 75px;
-            height: 75px;
-            margin: 0 auto 15px;
-            background: #dcfce7;
-            color: #16a34a;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
+
+            text-align: center;
+
+            font-size: 60px;
         }
 
         .success-title {
-            color: #16a34a !important;
-            margin-bottom: 10px;
-        }
 
-        .success-text {
             text-align: center;
-            color: #555;
-            line-height: 1.6;
+
+            color: #16a34a;
         }
 
-        .registration-number {
-            margin: 25px 0;
-            padding: 15px;
-            background: #eff6ff;
-            border-radius: 10px;
+        .success-message {
             text-align: center;
         }
-
-        .registration-number span {
-            display: block;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .registration-number strong {
-            color: #2563eb;
-            font-size: 22px;
-        }
-
-        /* DATA */
 
         .data-box {
-            margin-top: 25px;
+
             border: 1px solid #e5e7eb;
+
             border-radius: 10px;
+
             overflow: hidden;
+
+            margin-top: 25px;
         }
 
         .data-row {
+
             display: grid;
+
             grid-template-columns: 200px 1fr;
+
             border-bottom: 1px solid #e5e7eb;
         }
 
-        .data-row:last-child {
-            border-bottom: none;
-        }
-
         .data-label {
+
             padding: 13px 15px;
-            background: #f8fafc;
+
+            background: #f9fafb;
+
             font-weight: bold;
+
+            color: #555;
         }
 
         .data-value {
+
             padding: 13px 15px;
+
+            word-break: break-word;
         }
 
-        /* STATUS */
-
         .status-success {
-            margin-top: 25px;
+
+            margin-top: 20px;
+
             padding: 15px;
-            background: #dcfce7;
+
+            background: #f0fdf4;
+
             color: #166534;
+
+            border: 1px solid #bbf7d0;
+
             border-radius: 8px;
+
             text-align: center;
+
             font-weight: bold;
         }
 
-        /* ACTION BUTTON */
+        .payment-box {
+
+            margin-top: 15px;
+
+            border: 2px solid #2563eb;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+        }
+
+        .payment-title {
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 15px;
+
+            margin: 0;
+        }
+
+        .payment-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 14px 15px;
+
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .payment-label {
+            color: #555;
+        }
+
+        .payment-value {
+            font-weight: bold;
+        }
+
+        .discount {
+            color: #16a34a;
+        }
+
+        .total-row {
+            background: #eff6ff;
+        }
+
+        .total-row .payment-label,
+        .total-row .payment-value {
+
+            color: #2563eb;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
 
         .action-buttons {
+
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
+
+            gap: 12px;
+
+            margin-top: 25px;
         }
 
         .action-button {
-            display: inline-block;
-            padding: 12px 20px;
-            border-radius: 8px;
+
+            flex: 1;
+
+            text-align: center;
+
             text-decoration: none;
+
+            padding: 13px;
+
+            border-radius: 8px;
+
             font-weight: bold;
-            cursor: pointer;
+
             border: none;
+
+            cursor: pointer;
+
             font-size: 15px;
         }
 
         .back-button {
-            background: #2563eb;
-            color: white;
-        }
 
-        .back-button:hover {
-            background: #1d4ed8;
+            background: #e5e7eb;
+
+            color: #222;
         }
 
         .print-button {
-            background: #16a34a;
+
+            background: #2563eb;
+
             color: white;
         }
-
-        .print-button:hover {
-            background: #15803d;
-        }
-
-        /* FOOTER */
 
         footer {
+
             background: #111827;
+
             color: white;
+
             text-align: center;
-            padding: 20px;
+
+            padding: 25px;
+
             margin-top: 50px;
         }
 
-        /* PRINT */
+        @media (max-width: 600px) {
+
+            .header-container {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+            .header-right {
+
+                width: 100%;
+
+                justify-content: space-between;
+            }
+
+            .container {
+
+                margin: 25px auto;
+
+                padding: 0 12px;
+            }
+
+            .card,
+            .success-card {
+
+                padding: 20px;
+            }
+
+            .data-row {
+
+                grid-template-columns: 1fr;
+            }
+
+            .payment-row {
+
+                flex-direction: column;
+
+                gap: 5px;
+            }
+
+            .action-buttons {
+
+                flex-direction: column;
+            }
+
+            .radio-group,
+            .checkbox-group {
+
+                flex-direction: column;
+            }
+
+            .radio-item,
+            .checkbox-item {
+
+                width: 100%;
+            }
+        }
 
         @media print {
 
             header,
             footer,
             .action-buttons {
+
                 display: none;
             }
 
             body {
                 background: white;
-            }
-
-            .container {
-                margin: 0;
-                max-width: 100%;
-            }
-
-            .card {
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 600px) {
-
-            .container {
-                margin: 25px auto;
-            }
-
-            .card {
-                padding: 25px 20px;
-            }
-
-            .data-row {
-                grid-template-columns: 1fr;
-            }
-
-            .data-label {
-                padding-bottom: 5px;
-            }
-
-            .data-value {
-                padding-top: 5px;
             }
 
         }
@@ -429,40 +776,71 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <body>
 
-<!-- HEADER -->
-
 <header>
 
-    <h1><?= $siteName ?></h1>
+    <div class="header-container">
+
+        <div class="logo">
+
+            <?= htmlspecialchars($siteName) ?>
+
+        </div>
+
+        <div class="header-right">
+
+            <div class="tagline">
+
+                <?= htmlspecialchars($tagline) ?>
+
+            </div>
+
+            <a
+                href="index.php"
+                class="catalog-button"
+            >
+                ← Kembali ke Katalog
+            </a>
+
+        </div>
+
+    </div>
 
 </header>
 
 
 <div class="container">
 
+
 <?php if ($dataRegistrasi === null): ?>
 
-    <!-- =========================================================
+    <!-- =====================================================
          FORM REGISTRASI
-         ========================================================= -->
+    ====================================================== -->
 
     <div class="card">
 
-        <h2>📝 Form Registrasi Kursus</h2>
+        <h1>
+            📝 Registrasi Kursus
+        </h1>
 
-        <p class="description">
-            Silakan isi data berikut untuk melakukan pendaftaran
-            kursus di <?= $siteName ?>.
+        <p class="card-description">
+
+            Silakan isi data berikut untuk
+            melakukan pendaftaran kursus.
+
         </p>
 
-
-        <form method="POST" action="registration.php">
-
-            <!-- NAMA -->
+        <form
+            method="POST"
+            action="registration.php"
+        >
 
             <div class="form-group">
 
-                <label for="nama">
+                <label
+                    for="nama"
+                    class="main-label"
+                >
                     Nama Lengkap
                 </label>
 
@@ -477,11 +855,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
 
-            <!-- EMAIL -->
-
             <div class="form-group">
 
-                <label for="email">
+                <label
+                    for="email"
+                    class="main-label"
+                >
                     Email
                 </label>
 
@@ -496,16 +875,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
 
-            <!-- NO HP -->
-
             <div class="form-group">
 
-                <label for="no_hp">
+                <label
+                    for="no_hp"
+                    class="main-label"
+                >
                     No HP / WhatsApp
                 </label>
 
                 <input
-                    type="text"
+                    type="tel"
                     id="no_hp"
                     name="no_hp"
                     placeholder="08xxxxxxxxxx"
@@ -515,11 +895,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
 
-            <!-- PROGRAM STUDI -->
-
             <div class="form-group">
 
-                <label for="prodi">
+                <label
+                    for="prodi"
+                    class="main-label"
+                >
                     Program Studi
                 </label>
 
@@ -527,84 +908,90 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     type="text"
                     id="prodi"
                     name="prodi"
-                    placeholder="Contoh: Pendidikan Teknik Informatika"
+                    placeholder="Masukkan program studi"
                     required
                 >
 
             </div>
 
 
-            <!-- KURSUS -->
-
             <div class="form-group">
 
-                <label for="kursus">
-                    Kursus yang Dipilih
+                <label
+                    for="kursus"
+                    class="main-label"
+                >
+                    Pilih Kursus
                 </label>
 
                 <select
                     id="kursus"
                     name="kursus"
                     required
+                    onchange="tampilkanHarga()"
                 >
 
                     <option value="">
                         -- Pilih Kursus --
                     </option>
 
-                    <option
-                        value="Dasar Pemrograman PHP"
-                        <?= $kursusDipilih === "Dasar Pemrograman PHP" ? "selected" : "" ?>
-                    >
-                        Dasar Pemrograman PHP
-                    </option>
+                    <?php foreach ($daftarKursus as $kursus): ?>
 
-                    <option
-                        value="HTML dan CSS"
-                        <?= $kursusDipilih === "HTML dan CSS" ? "selected" : "" ?>
-                    >
-                        HTML dan CSS
-                    </option>
+                        <option
+                            value="<?= htmlspecialchars($kursus) ?>"
+                            <?= $kursusDipilih === $kursus
+                                ? "selected"
+                                : "" ?>
+                        >
 
-                    <option
-                        value="JavaScript Dasar"
-                        <?= $kursusDipilih === "JavaScript Dasar" ? "selected" : "" ?>
-                    >
-                        JavaScript Dasar
-                    </option>
+                            <?= htmlspecialchars($kursus) ?>
 
-                    <option
-                        value="Database MySQL"
-                        <?= $kursusDipilih === "Database MySQL" ? "selected" : "" ?>
-                    >
-                        Database MySQL
-                    </option>
+                        </option>
 
-                    <option
-                        value="Desain UI/UX"
-                        <?= $kursusDipilih === "Desain UI/UX" ? "selected" : "" ?>
-                    >
-                        Desain UI/UX
-                    </option>
-
-                    <option
-                        value="Git dan GitHub"
-                        <?= $kursusDipilih === "Git dan GitHub" ? "selected" : "" ?>
-                    >
-                        Git dan GitHub
-                    </option>
+                    <?php endforeach; ?>
 
                 </select>
+
+
+                <div class="price-box">
+
+                    <div class="price-label">
+                        Harga Kursus
+                    </div>
+
+                    <div
+                        class="original-price"
+                        id="hargaAwal"
+                    >
+                        Harga normal: Rp 0
+                    </div>
+
+                    <div
+                        class="price-value"
+                        id="hargaKursus"
+                    >
+                        Rp 0
+                    </div>
+
+                    <div
+                        class="discount-text"
+                        id="infoDiskon"
+                    >
+                        Pilih jenis peserta
+                        untuk mendapatkan diskon.
+                    </div>
+
+                </div>
 
             </div>
 
 
-            <!-- JENIS PESERTA -->
-
             <div class="form-group">
 
-                <label>
-                    Jenis Peserta
+                <label class="main-label">
+
+                    Jenis Peserta / Diskon
+
                 </label>
 
                 <div class="radio-group">
@@ -614,25 +1001,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <input
                             type="radio"
                             name="jenis_peserta"
-                            value="Mahasiswa"
+                            value="Guru"
                             required
+                            onchange="tampilkanHarga()"
                         >
 
-                        Mahasiswa
+                        Guru
+                        (Diskon 20%)
 
                     </label>
+
 
                     <label class="radio-item">
 
                         <input
                             type="radio"
                             name="jenis_peserta"
-                            value="Pelajar"
+                            value="Mahasiswa"
+                            onchange="tampilkanHarga()"
                         >
 
-                        Pelajar
+                        Mahasiswa
+                        (Diskon 15%)
 
                     </label>
+
 
                     <label class="radio-item">
 
@@ -640,9 +1033,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             type="radio"
                             name="jenis_peserta"
                             value="Umum"
+                            onchange="tampilkanHarga()"
                         >
 
                         Umum
+                        (Diskon 5%)
 
                     </label>
 
@@ -651,12 +1046,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
 
-            <!-- MINAT -->
-
             <div class="form-group">
 
-                <label>
-                    Minat Tambahan
+                <label class="main-label">
+
+                    Minat / Interest
+
                 </label>
 
                 <div class="checkbox-group">
@@ -665,7 +1060,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                         <input
                             type="checkbox"
-                            name="minat[]"
+                            name="interest[]"
                             value="Pemrograman"
                         >
 
@@ -673,11 +1068,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </label>
 
+
                     <label class="checkbox-item">
 
                         <input
                             type="checkbox"
-                            name="minat[]"
+                            name="interest[]"
                             value="Web Development"
                         >
 
@@ -685,11 +1081,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </label>
 
+
                     <label class="checkbox-item">
 
                         <input
                             type="checkbox"
-                            name="minat[]"
+                            name="interest[]"
                             value="Database"
                         >
 
@@ -697,15 +1094,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </label>
 
+
                     <label class="checkbox-item">
 
                         <input
                             type="checkbox"
-                            name="minat[]"
+                            name="interest[]"
                             value="UI/UX Design"
                         >
 
                         UI/UX Design
+
+                    </label>
+
+
+                    <label class="checkbox-item">
+
+                        <input
+                            type="checkbox"
+                            name="interest[]"
+                            value="Mobile Development"
+                        >
+
+                        Mobile Development
+
+                    </label>
+
+
+                    <label class="checkbox-item">
+
+                        <input
+                            type="checkbox"
+                            name="interest[]"
+                            value="Data Science"
+                        >
+
+                        Data Science
 
                     </label>
 
@@ -714,30 +1138,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
 
-            <!-- CATATAN -->
-
             <div class="form-group">
 
-                <label for="catatan">
+                <label
+                    for="catatan"
+                    class="main-label"
+                >
                     Catatan
                 </label>
 
                 <textarea
                     id="catatan"
                     name="catatan"
-                    placeholder="Tuliskan catatan jika ada..."
+                    placeholder="Tambahkan catatan jika diperlukan"
                 ></textarea>
 
             </div>
 
 
-            <!-- SUBMIT -->
-
             <button
                 type="submit"
                 class="submit-button"
             >
-                ✅ Kirim Pendaftaran
+                🚀 Daftar Sekarang
             </button>
 
         </form>
@@ -747,49 +1170,72 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <?php else: ?>
 
-    <!-- =========================================================
+    <!-- =====================================================
          HASIL REGISTRASI
-         ========================================================= -->
+    ====================================================== -->
 
-    <div class="card">
+    <div class="success-card">
 
         <div class="success-icon">
-            ✓
+            ✅
         </div>
 
-        <h2 class="success-title">
+        <h1 class="success-title">
             Registrasi Berhasil!
-        </h2>
+        </h1>
 
-        <p class="success-text">
+        <p class="success-message">
+
             Terima kasih,
-            <strong><?= htmlspecialchars($dataRegistrasi["nama"]) ?></strong>.
-            Pendaftaran kamu telah berhasil dikirim.
+
+            <strong>
+                <?= htmlspecialchars(
+                    $dataRegistrasi["nama"]
+                ) ?>
+            </strong>.
+
+            Data pendaftaran kamu
+            sudah berhasil disimpan.
+
         </p>
 
 
-        <!-- NOMOR REGISTRASI -->
-
-        <div class="registration-number">
-
-            <span>
-                Nomor Registrasi
-            </span>
-
-            <strong>
-                <?= htmlspecialchars($dataRegistrasi["nomor"]) ?>
-            </strong>
-
-        </div>
-
-
-        <!-- DETAIL DATA -->
-
-        <h3>
-            📋 Detail Pendaftaran
-        </h3>
-
         <div class="data-box">
+
+
+            <div class="data-row">
+
+                <div class="data-label">
+                    Nomor Registrasi
+                </div>
+
+                <div class="data-value">
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi["nomor"]
+                    ) ?>
+
+                </div>
+
+            </div>
+
+
+            <div class="data-row">
+
+                <div class="data-label">
+                    Tanggal Registrasi
+                </div>
+
+                <div class="data-value">
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi["tanggal"]
+                    ) ?>
+
+                </div>
+
+            </div>
+
 
             <div class="data-row">
 
@@ -798,7 +1244,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="data-value">
-                    <?= htmlspecialchars($dataRegistrasi["nama"]) ?>
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi["nama"]
+                    ) ?>
+
                 </div>
 
             </div>
@@ -811,7 +1261,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="data-value">
-                    <?= htmlspecialchars($dataRegistrasi["email"]) ?>
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi["email"]
+                    ) ?>
+
                 </div>
 
             </div>
@@ -824,7 +1278,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="data-value">
-                    <?= htmlspecialchars($dataRegistrasi["no_hp"]) ?>
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi["no_hp"]
+                    ) ?>
+
                 </div>
 
             </div>
@@ -837,7 +1295,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="data-value">
-                    <?= htmlspecialchars($dataRegistrasi["prodi"]) ?>
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi["prodi"]
+                    ) ?>
+
                 </div>
 
             </div>
@@ -850,7 +1312,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="data-value">
-                    <?= htmlspecialchars($dataRegistrasi["kursus"]) ?>
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi["kursus"]
+                    ) ?>
+
                 </div>
 
             </div>
@@ -863,7 +1329,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="data-value">
-                    <?= htmlspecialchars($dataRegistrasi["jenis_peserta"]) ?>
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi[
+                            "jenis_peserta"
+                        ]
+                    ) ?>
+
                 </div>
 
             </div>
@@ -872,11 +1344,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="data-row">
 
                 <div class="data-label">
-                    Minat Tambahan
+                    Interest
                 </div>
 
                 <div class="data-value">
-                    <?= htmlspecialchars($dataRegistrasi["minat"]) ?>
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi["interest"]
+                    ) ?>
+
                 </div>
 
             </div>
@@ -890,10 +1366,151 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="data-value">
 
-                    <?= $dataRegistrasi["catatan"] !== ""
-                        ? nl2br(htmlspecialchars($dataRegistrasi["catatan"]))
-                        : "Tidak ada catatan"
+                    <?php
+
+                    if (
+                        $dataRegistrasi["catatan"] !== ""
+                    ) {
+
+                        echo nl2br(
+                            htmlspecialchars(
+                                $dataRegistrasi["catatan"]
+                            )
+                        );
+
+                    } else {
+
+                        echo "-";
+
+                    }
+
                     ?>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="status-success">
+
+            ✅ Status:
+            <?= htmlspecialchars(
+                $dataRegistrasi["status"]
+            ) ?>
+
+        </div>
+
+
+        <h3 style="margin-top:30px;">
+
+            💰 Ringkasan Pembayaran
+
+        </h3>
+
+
+        <div class="payment-box">
+
+            <h3 class="payment-title">
+
+                Detail Biaya Kursus
+
+            </h3>
+
+
+            <div class="payment-row">
+
+                <div class="payment-label">
+
+                    Harga Kursus
+
+                </div>
+
+                <div class="payment-value">
+
+                    Rp
+                    <?= number_format(
+                        $dataRegistrasi["harga"],
+                        0,
+                        ",",
+                        "."
+                    ) ?>
+
+                </div>
+
+            </div>
+
+
+            <div class="payment-row">
+
+                <div class="payment-label">
+
+                    Jenis Peserta
+
+                </div>
+
+                <div class="payment-value">
+
+                    <?= htmlspecialchars(
+                        $dataRegistrasi[
+                            "jenis_peserta"
+                        ]
+                    ) ?>
+
+                </div>
+
+            </div>
+
+
+            <div class="payment-row">
+
+                <div class="payment-label">
+
+                    Diskon
+                    (<?= $dataRegistrasi[
+                        "persen_diskon"
+                    ] ?>%)
+
+                </div>
+
+                <div class="payment-value discount">
+
+                    - Rp
+                    <?= number_format(
+                        $dataRegistrasi[
+                            "jumlah_diskon"
+                        ],
+                        0,
+                        ",",
+                        "."
+                    ) ?>
+
+                </div>
+
+            </div>
+
+
+            <div class="payment-row total-row">
+
+                <div class="payment-label">
+
+                    Total Setelah Diskon
+
+                </div>
+
+                <div class="payment-value">
+
+                    Rp
+                    <?= number_format(
+                        $dataRegistrasi[
+                            "total_biaya"
+                        ],
+                        0,
+                        ",",
+                        "."
+                    ) ?>
 
                 </div>
 
@@ -901,17 +1518,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         </div>
 
-
-        <!-- STATUS -->
-
-        <div class="status-success">
-
-            ✅ Status: Pendaftaran Berhasil
-
-        </div>
-
-
-        <!-- BUTTON -->
 
         <div class="action-buttons">
 
@@ -935,19 +1541,164 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <?php endif; ?>
 
+
 </div>
 
 
-<!-- FOOTER -->
-
 <footer>
 
-    &copy; <?= date("Y") ?>
-    <?= $siteName ?>
+    <p>
+
+        &copy;
+        <?= date("Y") ?>
+        <?= htmlspecialchars($siteName) ?>
+
+    </p>
+
+    <p>
+
+        <?= htmlspecialchars($tagline) ?>
+
+    </p>
 
 </footer>
+
+
+<script>
+
+const hargaKursus = {
+
+    "Dasar Pemrograman PHP": 150000,
+
+    "HTML dan CSS": 100000,
+
+    "JavaScript Dasar": 125000,
+
+    "Database MySQL": 150000,
+
+    "Desain UI/UX": 175000,
+
+    "Git dan GitHub": 100000
+
+};
+
+
+const diskonPeserta = {
+
+    "Guru": 20,
+
+    "Mahasiswa": 15,
+
+    "Umum": 5
+
+};
+
+
+function tampilkanHarga() {
+
+    const kursus =
+        document.getElementById("kursus").value;
+
+    const hargaAwalElement =
+        document.getElementById("hargaAwal");
+
+    const hargaElement =
+        document.getElementById("hargaKursus");
+
+    const infoDiskonElement =
+        document.getElementById("infoDiskon");
+
+
+    if (kursus === "") {
+
+        hargaAwalElement.textContent =
+            "Harga normal: Rp 0";
+
+        hargaElement.textContent =
+            "Rp 0";
+
+        infoDiskonElement.textContent =
+            "Pilih kursus dan jenis peserta.";
+
+        return;
+    }
+
+
+    const harga =
+        hargaKursus[kursus] || 0;
+
+
+    const radioPeserta =
+        document.querySelector(
+            'input[name="jenis_peserta"]:checked'
+        );
+
+
+    if (!radioPeserta) {
+
+        hargaAwalElement.textContent =
+            "Harga normal: Rp " +
+            harga.toLocaleString("id-ID");
+
+        hargaElement.textContent =
+            "Rp " +
+            harga.toLocaleString("id-ID");
+
+        infoDiskonElement.textContent =
+            "Pilih jenis peserta untuk mendapatkan diskon.";
+
+        return;
+    }
+
+
+    const jenisPeserta =
+        radioPeserta.value;
+
+
+    const persenDiskon =
+        diskonPeserta[jenisPeserta] || 0;
+
+
+    const jumlahDiskon =
+        harga * (persenDiskon / 100);
+
+
+    const total =
+        harga - jumlahDiskon;
+
+
+    hargaAwalElement.textContent =
+        "Harga normal: Rp " +
+        harga.toLocaleString("id-ID");
+
+
+    hargaElement.textContent =
+        "Rp " +
+        total.toLocaleString("id-ID");
+
+
+    infoDiskonElement.textContent =
+        "Diskon " +
+        jenisPeserta +
+        " " +
+        persenDiskon +
+        "% diterapkan. Hemat Rp " +
+        jumlahDiskon.toLocaleString("id-ID");
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        tampilkanHarga();
+
+    }
+);
+
+</script>
 
 </body>
 
 </html>
-```
