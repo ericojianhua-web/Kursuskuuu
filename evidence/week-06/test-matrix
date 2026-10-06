@@ -1,0 +1,11 @@
+TEST MATRIX - WEEK 06
+KURSUSKU
+
+No | Skenario Pengujian | Input | Hasil yang Diharapkan | Status
+1  | Form lengkap | Semua data diisi | Data berhasil diproses | PASS
+2  | Mahasiswa | Jenis Mahasiswa | Diskon 15% diterapkan | PASS
+3  | Guru | Jenis Guru | Diskon 20% diterapkan | PASS
+4  | Umum | Jenis Umum | Diskon 5% diterapkan | PASS
+5  | Checkbox minat | Beberapa minat dipilih | Minat tampil | PASS
+6  | Minat kosong | Tidak ada minat dipilih | Sistem menangani kondisi kosong | PASS
+7  | History dummy | Data dummy tersedia | History tampil | PASS
